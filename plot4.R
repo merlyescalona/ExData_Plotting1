@@ -1,3 +1,7 @@
+# Coursera's Exploratory Data Analysis 
+# Peer Graded Assignment: Course Project 1
+# Merly Escalona <escalona10@gmail.com>
+
 url<-"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
 zipname<-"data/power.zip"
 filename<-"data/power.txt"
