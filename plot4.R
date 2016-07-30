@@ -1,0 +1,43 @@
+url<-"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+zipname<-"data/power.zip"
+filename<-"data/power.txt"
+
+# Making sure data folder exists
+if(!dir.exists("data")){dir.create("data")}
+# Downloading and unzipping the data
+if(!file.exists(zipname)){
+  download.file(url, destfile = zipname,method = "curl")
+  unzip(zipfile = zipname, exdir = "data")
+  file.rename(from = "data/household_power_consumption.txt", to=filename)
+}
+
+# reading the files
+f<-read.table(filename,header = T, sep=";", colClasses = c(rep("character",2), rep("numeric",7)), na.strings = "?")
+f$datetime<-strptime(paste(f$Date,f$Time,sep=" - "),format = "%d/%m/%Y - %H:%M:%S" )
+# Converting columns date and time to the corresponding data types
+f$Date  <-as.Date(f$Date,format = "%d/%m/%Y")
+f$Time<-strptime(f$Time,format = "%H:%M:%S",tz ="CET" )
+# Creating the subset
+s<-f[f$Date%in%c(as.Date("01/02/2007",format = "%d/%m/%Y" ),as.Date("02/02/2007",format = "%d/%m/%Y")),]
+# Once the subset is created, memory is freed
+rm(f)
+# Device opened
+png(filename = "plot4.png")
+par(mfrow=c(2,2), mar=c(4,4,2,2))
+# Plot row1 col1
+with(s,plot(datetime,Global_active_power, type="l",ylab="Global Active Power"))
+# Plot row1 col2
+with(s,plot(datetime,Voltage,xlab="datetime",ylab="Voltage", type="l"))
+# Plot row2 col1
+with(s,plot(datetime,Sub_metering_1, type="l", ylab="Energy sub metering"))
+lines(s$datetime,s$Sub_metering_2,col="red")
+lines(s$datetime,s$Sub_metering_3,col="blue")
+legend("topright", legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"),lwd =  2,col = c("black","red","blue"))
+# Plot row2 col2
+with(s,plot(datetime,Global_reactive_power,xlab="datetime", type="l"))
+
+# Device closed
+dev.off()
+# Freeing rest of the memory used
+rm(list = ls())
+
